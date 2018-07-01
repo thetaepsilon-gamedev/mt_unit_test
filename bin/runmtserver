@@ -1,0 +1,21 @@
+#!/bin/sh
+
+err() { echo "#" "$@" >&2; };
+usage() {
+	err "Usage: runmtserver basedir [server args...]";
+	err "	Runs a minetest server using the minetest.conf and world inside basedir.";
+	err "	The minetest server's CWD is set to basedir before running.";
+	err "	The world must be a directory called \"world\" inside basedir.";
+	exit 1;
+};
+
+die() {
+	err "$@";
+	err "abort!";
+	exit 1;
+}
+
+if test $# -lt 1; then usage; fi;
+basedir="$1"; shift;
+cd "$basedir" || die "can't change directory to server start directory";
+exec minetest --server --config minetest.conf --world world "$@";
