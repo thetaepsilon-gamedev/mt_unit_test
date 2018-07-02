@@ -1,13 +1,18 @@
 #!/bin/sh
 
 err() { echo "#" "$@" >&2; };
-usage() {
-	err "Usage: runmtserver basedir [server args...]";
-	err "	Runs a minetest server using the minetest.conf and world inside basedir.";
-	err "	The minetest server's CWD is set to basedir before running.";
-	err "	The world must be a directory called \"world\" inside basedir.";
-	exit 1;
+usage_desc() {
+cat << EOF
+# Usage: runmtserver basedir [server args...]
+	Runs a minetest server using the minetest.conf and world inside basedir.
+	The minetest server's CWD is set to basedir before running.
+	The world must be a directory called \"world\" inside basedir.
+EOF
 };
+usage() {
+	usage_desc >&2;
+	exit 1;
+}
 
 die() {
 	err "$@";
