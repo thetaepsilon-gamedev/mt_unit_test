@@ -1,6 +1,7 @@
 #!/bin/sh
 
-err() { echo "#" "$@" >&2; };
+. ds2.minetest.mt_unit_test.common.sh;
+
 usage_desc() {
 cat << EOF
 # Usage: runmtserver basedir [server args...]
@@ -9,16 +10,6 @@ cat << EOF
 	The world must be a directory called \"world\" inside basedir.
 EOF
 };
-usage() {
-	usage_desc >&2;
-	exit 1;
-}
-
-die() {
-	err "$@";
-	err "abort!";
-	exit 1;
-}
 
 if test $# -lt 1; then usage; fi;
 basedir="$1"; shift;
