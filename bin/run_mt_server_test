@@ -1,0 +1,43 @@
+#!/bin/sh
+# run_mt_server_test: run a single test directory in an isolated, empty server.
+# see the usage for extended hints.
+debugname="$0";
+. ds2.minetest.mt_unit_test.common.sh;
+. ds2.minetest.mt_unit_test.paths.sh;
+distpath="$(expect_cfg_var 'paths_ds2_minetest_mt_unit_test_dist')";
+runserver="$(expect_path_bin runmtserver)" || exit $?;
+
+usage_desc() {
+cat << EOF
+# Usage: run_mt_server_test dir
+	Executes a single minetest server test case specified in [dir],
+	running in an isolated server instance.
+	Returns the exit status of the minetest server process;
+	the server is made to exit normally if the test succeeded without error.
+EOF
+}
+if test $# -lt 1; then usage; fi;
+testsrc="$1";
+debugvar testsrc;
+
+# to run the server instance, we copy a pre-configured minetest.conf and world folder.
+# this world is set to no-save and is destroyed upon clean-up.
+# so for starters we need a temporary directory...
+tmpdir="$(mktemp -d)" || die "Unable to set up temporary directory";
+debugvar tmpdir;
+cleanup() {
+	nuketmp "$tmpdir";
+}
+trap cleanup EXIT;
+
+target="$tmpdir/server"
+cp -r "$distpath/prototype_server" "$target" \
+	|| die "Unable to copy files for server test instance";
+
+# TODO: copy appropriate mod files
+
+debugexec "$runserver" "$target";
+e=$?;
+if test $e -ne 0; then err "Minetest server exited with code $e"; fi;
+exit $e;
+
