@@ -1,5 +1,6 @@
 #!/bin/sh
 
+debugname="$0";
 . ds2.minetest.mt_unit_test.common.sh;
 
 usage_desc() {
@@ -14,4 +15,5 @@ EOF
 if test $# -lt 1; then usage; fi;
 basedir="$1"; shift;
 cd "$basedir" || die "can't change directory to server start directory";
-exec minetest --server --config minetest.conf --world world "$@";
+debug "PWD now: $(pwd)";
+debugexec minetest --server --config minetest.conf --world world "$@";
