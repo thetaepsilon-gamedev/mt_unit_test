@@ -36,8 +36,20 @@ cp -r "$distpath/prototype_server" "$target" \
 
 # TODO: copy appropriate mod files
 
-debugexec "$runserver" "$target";
+# Minetest prints a banner upon start-up, and mods could chuck misc. data at stdout too.
+# In general, we only want to see these messages if we run into problems;
+# in the case that the process exits normally, just don't print it out.
+# to do this, redirect stdout/stderr to a buffer log in the tmpdir,
+# and print out so many lines from the end of it on failure.
+logfile="$tmpdir/minetest.log";
+debugexec "$runserver" "$target" >"$logfile" 2>&1;
 e=$?;
-if test $e -ne 0; then err "Minetest server exited with code $e"; fi;
+if test $e -ne 0; then {
+	err "Minetest server exited with code $e";
+	err "---- last log lines start ---";
+	# XXX: make this line count configurable?
+	tail -n 15 "$logfile" >&2;
+	err "---- last log lines end ----";
+}; fi;
 exit $e;
 
